@@ -1,9 +1,13 @@
+import Alert from "@/components/Alert"
+import Hero from "@/components/Hero"
 
-
-export default function Home() {
-  return(
+const page = () => {
+  return (
     <div>
-      heya
+      <Alert/>
+      <Hero />
     </div>
   )
 }
+
+export default page
