@@ -1,12 +1,17 @@
 "use client"
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 gsap.registerPlugin(useGSAP)
 
 const Alert = () => {
     const ghostDivRef = useRef(null)
+    const [viewed, setViwed] = useState(true) // default is true so it is hidden
+
+    useEffect(() => {
+        if (!localStorage.getItem("ghostViewed")) setViwed(false)
+    }, [])
 
     useGSAP(() => {
         if (localStorage.getItem("ghostViewed") || !ghostDivRef.current) return
@@ -32,7 +37,7 @@ const Alert = () => {
                 {
                     [randSide]: "0px",
                     duration: 0.5,
-                    ease: "power2.out"
+                    ease: "bounce.out"
                 }
             )
 
@@ -55,8 +60,14 @@ const Alert = () => {
         return () => clearInterval(interval)
     }, [])
 
+    const handleClick = () => {
+        localStorage.setItem("ghostViewed", "true")
+    }
+
+    if (typeof window !== "undefined" && localStorage.getItem("ghostViewed")) return null
+
     return (
-        <div ref={ghostDivRef} className='fixed cursor-pointer rotate-x-180' onClick={() => console.log("Clicked")}>
+        <div ref={ghostDivRef} className={`fixed ${viewed && "hidden"} cursor-pointer rotate-x-180`} onClick={handleClick}>
             <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect width="100%" height="100%" fill="transparent" />
                 <path d="M10,50 
