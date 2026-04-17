@@ -1,7 +1,7 @@
 "use client"
 import { useMemo } from 'react'
 import { TypeAnimation } from 'react-type-animation';
-import { personalityToNumber } from "@/lib/tools"
+import { personalityToNumber, shuffleArr } from "@/lib/tools"
 
 const Hero = () => {
     const personalities = useMemo(() => [
@@ -25,7 +25,7 @@ const Hero = () => {
             <div className='font-semibold text-xl flex flex-col min-w-screen text-center'>
                 <span className='text-2xl'>I am Sak G, a..</span>
                 <TypeAnimation
-                    sequence={personalityToNumber(personalities, 500)}
+                    sequence={personalityToNumber(shuffleArr(personalities), 500)}
                     wrapper="span"
                     speed={50}
                     repeat={Infinity}

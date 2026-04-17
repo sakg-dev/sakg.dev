@@ -7,23 +7,56 @@ gsap.registerPlugin(useGSAP)
 
 const Alert = () => {
     const ghostDivRef = useRef(null)
-    const pos = useRef({ top: -16, left: 4 })
 
     useGSAP(() => {
         if (localStorage.getItem("ghostViewed") || !ghostDivRef.current) return
-        const divRef = ghostDivRef.current as HTMLDivElement
-        const posVars = pos.current
+        const div = ghostDivRef.current as HTMLDivElement
         const sides = ["top", "bottom", "left", "right"]
 
-        setInterval(() => {
+        div.style.visibility = "hidden"
+        const interval = setInterval(() => {
             const randSide = sides[Math.floor(Math.random() * sides.length)]
-            console.log(randSide)
-            gsap.to(divRef, { top: (posVars.top * 4).toString(), left: (posVars.left * 4).toString() })
-        }, 2000)
+            const oppositeSide = ["top", "bottom"].includes(randSide) ? "left" : "top"
+            const randomPercentage = Math.floor(Math.random() * 80 + 10)
+            const rotateZ = randSide == "top" ? 0 : (randSide == "right" ? 90 : (randSide == "bottom" ? 180 : 270))
+
+            const tl = gsap.timeline()
+
+            tl.fromTo(div,
+                {
+                    [randSide]: "-64px",
+                    [oppositeSide]: `${randomPercentage}%`,
+                    visibility: "visible",
+                    rotateZ
+                },
+                {
+                    [randSide]: "0px",
+                    duration: 0.5,
+                    ease: "power2.out"
+                }
+            )
+
+            tl.to(div, {
+                [randSide]: "-64px",
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power2.in"
+            })
+
+            tl.set(div, {
+                clearProps: "all"
+            })
+
+            tl.set(div, {
+                visibility: "hidden"
+            })
+        }, 3000)
+
+        return () => clearInterval(interval)
     }, [])
 
     return (
-        <div ref={ghostDivRef} className='absolute left-4 cursor-pointer rotate-x-180' onClick={() => console.log("Clicked")}>
+        <div ref={ghostDivRef} className='fixed cursor-pointer rotate-x-180' onClick={() => console.log("Clicked")}>
             <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <rect width="100%" height="100%" fill="transparent" />
                 <path d="M10,50 
