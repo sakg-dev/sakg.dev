@@ -1,10 +1,10 @@
-import Alert from "@/components/Alert"
+import AlertWrapper from "@/components/Alert/Wrapper"
 import Hero from "@/components/Hero"
 
 const page = () => {
   return (
     <div>
-      <Alert/>
+      <AlertWrapper />
       <Hero />
     </div>
   )

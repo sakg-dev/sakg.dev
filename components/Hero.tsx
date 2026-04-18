@@ -31,7 +31,6 @@ const Hero = () => {
                     repeat={Infinity}
                 />
             </div>
-            <span>This is my temporary website, I had so many ideas so I ended up making this ugly one and will think abt design later :p</span>  {/* make it like in a dialog kinda? */}
         </div>
     )
 }
