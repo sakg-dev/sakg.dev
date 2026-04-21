@@ -8,9 +8,9 @@ gsap.registerPlugin(useGSAP)
 
 type setStateBool = React.Dispatch<React.SetStateAction<boolean>>
 
-interface infosRef {
-    flipSide: string,
-    rotateZ: 0 | 90 | 180 | 270
+interface dialogInfoType {
+    rect: DOMRect,
+    side: string
 }
 
 const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
@@ -18,7 +18,8 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
     const [isClicked, setIsClicked] = useState(false)
     const tlRef = useRef<GSAPTimeline>(undefined)
     const intervalRef = useRef<ReturnType<typeof setTimeout>>(undefined)
-    const infosRef = useRef<infosRef>({ flipSide: "top", rotateZ: 0 })
+    const infosRef = useRef<{ flipSide: string }>({ flipSide: "top" })
+    const [dialogInfo, setDialogInfo] = useState<dialogInfoType | null>(null)
 
 
     useGSAP(() => {
@@ -28,7 +29,8 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
 
         div.style.visibility = "hidden"
         intervalRef.current = setInterval(() => {
-            const randSide = sides[Math.floor(Math.random() * sides.length)]
+            // const randSide = sides[Math.floor(Math.random() * sides.length)]
+            const randSide = "bottom"
             const flipSide: Record<string, string> = {
                 top: "bottom",
                 bottom: "top",
@@ -39,7 +41,6 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
             const oppositeSide = ["top", "bottom"].includes(randSide) ? "left" : "top"
             const randomPercentage = Math.floor(Math.random() * 80 + 10)
             const rotateZ = randSide == "bottom" ? 0 : (randSide == "left" ? 90 : (randSide == "top" ? 180 : 270))
-            infosRef.current.rotateZ = rotateZ
 
             const tl = gsap.timeline()
 
@@ -77,10 +78,13 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
     }, [])
 
     const handleClick = () => {
-        // localStorage.setItem("ghostViewed", "true")
-        setIsClicked(true)
+        if (!ghostDivRef.current) return
+        const rect = (ghostDivRef.current as HTMLDivElement).getBoundingClientRect()
         tlRef.current?.pause()
         clearInterval(intervalRef.current)
+        setIsClicked(true)
+        setDialogInfo({ rect, side: infosRef.current.flipSide })
+        // localStorage.setItem("ghostViewed", "true")
 
         // make a dialog kinda thing here, if it is removed, unmount this comp
 
@@ -91,8 +95,10 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
     }
 
     return (
-        <div ref={ghostDivRef} className={`fixed cursor-pointer bg-red-900`}>
-            {isClicked ? <AlertDialog infosRef={infosRef.current} /> : null}
+        <div ref={ghostDivRef} className={`fixed cursor-pointer`}>
+            {isClicked && dialogInfo && (
+                <AlertDialog rect={dialogInfo.rect} side={dialogInfo.side} onClose={() => setDialogInfo(null)} />
+            )}
             <div onClick={handleClick}>
                 {isClicked ?
                     <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
