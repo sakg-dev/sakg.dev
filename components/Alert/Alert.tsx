@@ -29,8 +29,7 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
 
         div.style.visibility = "hidden"
         intervalRef.current = setInterval(() => {
-            // const randSide = sides[Math.floor(Math.random() * sides.length)]
-            const randSide = "bottom"
+            const randSide = sides[Math.floor(Math.random() * sides.length)]
             const flipSide: Record<string, string> = {
                 top: "bottom",
                 bottom: "top",
@@ -79,25 +78,24 @@ const Alert = ({ setAlertShown }: { setAlertShown: setStateBool }) => {
 
     const handleClick = () => {
         if (!ghostDivRef.current) return
+        localStorage.setItem("ghostViewed", "true")
+
         const rect = (ghostDivRef.current as HTMLDivElement).getBoundingClientRect()
         tlRef.current?.pause()
         clearInterval(intervalRef.current)
         setIsClicked(true)
         setDialogInfo({ rect, side: infosRef.current.flipSide })
-        // localStorage.setItem("ghostViewed", "true")
+    }
 
-        // make a dialog kinda thing here, if it is removed, unmount this comp
-
-        // setTimeout(() => {
-        // tlRef.current?.play()
-        // }, 1000);
-        // setAlertShown(true)
+    const dialogClose = () => {
+        setAlertShown(true)
+        setDialogInfo(null)
     }
 
     return (
         <div ref={ghostDivRef} className={`fixed cursor-pointer`}>
             {isClicked && dialogInfo && (
-                <AlertDialog rect={dialogInfo.rect} side={dialogInfo.side} onClose={() => setDialogInfo(null)} />
+                <AlertDialog rect={dialogInfo.rect} side={dialogInfo.side} onClose={dialogClose} />
             )}
             <div onClick={handleClick}>
                 {isClicked ?
